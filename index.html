@@ -1,204 +1,577 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pill & Strip Calculator</title>
+  <meta name="theme-color" content="#f4f7fc">
+  <title>Pill Calculator | Smart Medical Tool</title>
 
   <style>
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1746b8;
+      --text: #17243b;
+      --muted: #77849a;
+      --border: #e3e9f2;
+      --surface: #ffffff;
+      --background: #f4f7fc;
+      --green: #159957;
     }
 
     body {
-      font-family: Arial, sans-serif;
-      background: #f1f5f9;
-      padding: 20px;
-      margin: 0;
+      min-height: 100vh;
+      padding: 35px 16px;
+      font-family: Inter, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(ellipse at top left, #e2edff 0%, transparent 42%),
+        var(--background);
+      color: var(--text);
     }
 
     .container {
-      max-width: 450px;
-      margin: 25px auto;
-      padding: 25px;
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 5px 20px #00000012;
+      width: 100%;
+      max-width: 510px;
+      margin: 0 auto;
+      overflow: hidden;
+      background: var(--surface);
+      border: 1px solid #e8edf5;
+      border-radius: 24px;
+      box-shadow: 0 20px 65px rgba(35, 61, 110, 0.09);
     }
 
-    h2 {
-      text-align: center;
-      color: #1769aa;
-      margin-top: 0;
+    .header {
+      padding: 30px 28px 25px;
+      background: linear-gradient(135deg, #ffffff, #f4f8ff);
+      border-bottom: 1px solid #edf1f7;
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .brand-icon {
+      display: grid;
+      place-items: center;
+      width: 46px;
+      height: 46px;
+      border-radius: 15px;
+      background: linear-gradient(135deg, #3478f6, #1553ce);
+      color: white;
+      font-size: 23px;
+      box-shadow: 0 7px 18px #2563eb35;
+    }
+
+    .brand-name {
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 1.1px;
+      text-transform: uppercase;
+    }
+
+    .brand-caption {
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .eyebrow {
+      margin-bottom: 8px;
+      color: var(--primary);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.7px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: clamp(27px, 6vw, 34px);
+      line-height: 1.2;
+      letter-spacing: -1.2px;
     }
 
     .subtitle {
-      text-align: center;
-      color: #64748b;
-      margin-bottom: 24px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .content {
+      padding: 28px;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .section-heading h2 {
+      font-size: 16px;
+      font-weight: 750;
+    }
+
+    .required-note {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .dose-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 11px;
+      margin-bottom: 25px;
+    }
+
+    .dose-card {
+      padding: 13px 10px;
+      background: #f8faff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    .dose-card:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px #2563eb12;
+    }
+
+    .dose-label {
+      display: block;
+      margin-bottom: 11px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #52617a;
+    }
+
+    .dose-input {
+      width: 100%;
+      padding: 0;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--text);
+      font-size: 23px;
+      font-weight: 750;
+      font-family: inherit;
     }
 
     label {
       display: block;
-      margin: 15px 0 7px;
-      font-weight: bold;
-      color: #334155;
+      margin: 17px 0 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #34435c;
     }
 
-    input, select {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
-      font-size: 16px;
-      background: white;
+    .field-wrap {
+      position: relative;
     }
 
-    button {
+    input:not(.dose-input), select {
+      display: block;
       width: 100%;
-      padding: 14px;
-      margin-top: 22px;
-      background: #1769aa;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 17px;
+      min-height: 49px;
+      padding: 12px 14px;
+      border: 1px solid #dce4ef;
+      border-radius: 11px;
+      outline: none;
+      background: #fff;
+      color: var(--text);
+      font: inherit;
+      font-size: 14px;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px #2563eb15;
+    }
+
+    select {
       cursor: pointer;
     }
 
-    button:hover {
-      background: #0d4f86;
+    .field-hint {
+      margin-top: 7px;
+      color: #8995a8;
+      font-size: 11px;
+    }
+
+    .duration-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 12px;
+    }
+
+    .calculate-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      min-height: 53px;
+      margin-top: 27px;
+      padding: 14px 18px;
+      border: 0;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #3478f6, #2057d3);
+      color: #fff;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 750;
+      cursor: pointer;
+      box-shadow: 0 8px 20px #2563eb30;
+      transition: transform .2s, box-shadow .2s;
+    }
+
+    .calculate-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px #2563eb40;
+    }
+
+    .calculate-btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-arrow {
+      font-size: 20px;
+      line-height: 1;
     }
 
     .result {
       display: none;
-      margin-top: 24px;
-      padding: 18px;
-      background: #eaf7ee;
-      border-radius: 12px;
+      margin-top: 28px;
+      padding: 22px;
+      border: 1px solid #d9e8ff;
+      border-radius: 17px;
+      background: linear-gradient(145deg, #f5f9ff, #ffffff);
+      animation: reveal .35s ease;
     }
 
-    .result h3 {
+    @keyframes reveal {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-heading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .result-icon {
+      display: grid;
+      place-items: center;
+      width: 39px;
+      height: 39px;
+      border-radius: 12px;
+      background: #e2edff;
+      font-size: 19px;
+    }
+
+    .result-heading h3 {
+      font-size: 16px;
+    }
+
+    .result-heading p {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .total-card {
+      padding: 20px 12px;
       text-align: center;
-      color: #24743a;
-      margin-top: 0;
+      border: 1px solid #dce8ff;
+      border-radius: 14px;
+      background: white;
+    }
+
+    .total-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 650;
     }
 
     .total {
-      text-align: center;
-      font-size: 35px;
-      font-weight: bold;
-      color: #1769aa;
-      margin: 12px 0;
+      margin: 8px 0;
+      color: var(--primary);
+      font-size: clamp(32px, 8vw, 42px);
+      font-weight: 850;
+      letter-spacing: -1.5px;
+    }
+
+    .total-caption {
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .result-details {
+      margin-top: 16px;
+      padding: 0 14px;
+      border-radius: 12px;
+      background: white;
+      border: 1px solid #e8edf5;
     }
 
     .result-row {
       display: flex;
       justify-content: space-between;
-      gap: 12px;
-      padding: 10px 0;
-      border-bottom: 1px solid #d5e8d9;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid #edf1f7;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .result-row:last-child {
+      border-bottom: 0;
+    }
+
+    .result-row span {
+      color: #68768d;
     }
 
     .result-row strong {
+      color: #24344e;
       text-align: right;
+      overflow-wrap: anywhere;
     }
 
     .error {
-      color: #c62828;
-      text-align: center;
-      margin-top: 15px;
+      display: none;
+      margin-top: 18px;
+      padding: 12px 14px;
+      border: 1px solid #fecaca;
+      border-radius: 10px;
+      background: #fff1f2;
+      color: #b42332;
+      font-size: 13px;
+      line-height: 1.5;
     }
 
     .note {
-      font-size: 12px;
-      line-height: 1.6;
-      color: #64748b;
-      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      margin-top: 25px;
+      padding: 14px;
+      border: 1px solid #e7edf5;
+      border-radius: 12px;
+      background: #f8fafc;
+      color: #718096;
+      font-size: 11px;
+      line-height: 1.7;
+    }
+
+    .note-icon {
+      flex-shrink: 0;
+      font-size: 16px;
+    }
+
+    .footer {
+      padding: 16px 25px;
+      border-top: 1px solid #edf1f7;
+      text-align: center;
+      color: #97a2b3;
+      font-size: 11px;
+    }
+
+    @media (max-width: 390px) {
+      body {
+        padding: 16px 10px;
+      }
+
+      .header, .content {
+        padding: 22px 18px;
+      }
+
+      .dose-grid {
+        gap: 7px;
+      }
+
+      .dose-card {
+        padding: 11px 7px;
+      }
+
+      .dose-input {
+        font-size: 20px;
+      }
+
+      .duration-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+      }
     }
   </style>
 </head>
 
 <body>
-  <div class="container">
-    <h2>💊 Pill Calculator</h2>
-    <p class="subtitle">Calculate tablets and strips needed</p>
+  <main class="container">
 
-    <form id="pillForm">
-      <label for="morning">Morning dose (tablets)</label>
-      <input type="number" id="morning" min="0"
-             max="100" step="0.5" value="1" required>
-
-      <label for="evening">Evening dose (tablets)</label>
-      <input type="number" id="evening" min="0"
-             max="100" step="0.5" value="1" required>
-
-      <label for="night">Night dose (tablets)</label>
-      <input type="number" id="night" min="0"
-             max="100" step="0.5" value="0" required>
-
-      <label for="duration">Treatment duration</label>
-      <input type="number" id="duration" min="1"
-             max="3650" step="1" value="30" required>
-
-      <label for="unit">Duration unit</label>
-      <select id="unit">
-        <option value="days">Days</option>
-        <option value="months">Months</option>
-      </select>
-
-      <label for="stripSize">Tablets per strip</label>
-      <input type="number" id="stripSize" min="1"
-             max="1000" step="1" value="10" required>
-
-      <button type="submit">Calculate</button>
-    </form>
-
-    <div class="result" id="result" aria-live="polite">
-      <h3>📋 Calculation Result</h3>
-
-      <div class="result-row">
-        <span>Total duration</span>
-        <strong id="durationResult"></strong>
+    <header class="header">
+      <div class="brand-row">
+        <div class="brand-icon" aria-hidden="true">✚</div>
+        <div>
+          <div class="brand-name">MediCalc</div>
+          <div class="brand-caption">Smart healthcare utilities</div>
+        </div>
       </div>
 
-      <div class="result-row">
-        <span>Tablets per day</span>
-        <strong id="dailyResult"></strong>
-      </div>
+      <p class="eyebrow">Dosage planning tool</p>
+      <h1>Pill & Strip<br>Calculator</h1>
+      <p class="subtitle">
+        Calculate your total tablets and required strips
+        based on your prescribed daily dosage.
+      </p>
+    </header>
 
-      <div class="result-row">
-        <span>Total tablets required</span>
-        <strong id="totalResult"></strong>
-      </div>
+    <div class="content">
+      <form id="pillForm">
+        <div class="section-heading">
+          <h2>01. Daily dosage</h2>
+          <span class="required-note">Enter tablets per dose</span>
+        </div>
 
-      <div class="result-row">
-        <span>Tablets per strip</span>
-        <strong id="stripSizeResult"></strong>
-      </div>
+        <div class="dose-grid">
+          <div class="dose-card">
+            <label class="dose-label" for="morning">☀ Morning</label>
+            <input class="dose-input" type="number" id="morning"
+              min="0" max="100" step="0.5" value="1" required>
+          </div>
 
-      <div class="result-row">
-        <span>Strips required</span>
-        <strong id="stripsResult"></strong>
-      </div>
+          <div class="dose-card">
+            <label class="dose-label" for="evening">◷ Evening</label>
+            <input class="dose-input" type="number" id="evening"
+              min="0" max="100" step="0.5" value="1" required>
+          </div>
 
-      <div class="result-row">
-        <span>Extra tablets after full strips</span>
-        <strong id="extraResult"></strong>
-      </div>
+          <div class="dose-card">
+            <label class="dose-label" for="night">☾ Night</label>
+            <input class="dose-input" type="number" id="night"
+              min="0" max="100" step="0.5" value="0" required>
+          </div>
+        </div>
 
-      <div class="total" id="summary"></div>
+        <div class="section-heading">
+          <h2>02. Treatment period</h2>
+        </div>
+
+        <div class="duration-grid">
+          <div>
+            <label for="duration">Duration</label>
+            <input type="number" id="duration" min="1"
+              max="3650" step="1" value="30" required>
+          </div>
+
+          <div>
+            <label for="unit">Time unit</label>
+            <select id="unit">
+              <option value="days">Days</option>
+              <option value="months">Months</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="section-heading" style="margin-top:28px;margin-bottom:0">
+          <h2>03. Packaging details</h2>
+        </div>
+
+        <label for="stripSize">Tablets per strip</label>
+        <input type="number" id="stripSize" min="1"
+          max="1000" step="1" value="10" required>
+        <p class="field-hint">
+          Enter the number of tablets in one complete strip.
+        </p>
+
+        <button class="calculate-btn" type="submit">
+          Calculate requirement
+          <span class="btn-arrow" aria-hidden="true">→</span>
+        </button>
+      </form>
+
+      <section class="result" id="result" aria-live="polite">
+        <div class="result-heading">
+          <div class="result-icon" aria-hidden="true">📊</div>
+          <div>
+            <h3>Calculation summary</h3>
+            <p>Your estimated tablet requirement</p>
+          </div>
+        </div>
+
+        <div class="total-card">
+          <div class="total-label">Total tablets required</div>
+          <div class="total" id="totalResult"></div>
+          <div class="total-caption" id="summary"></div>
+        </div>
+
+        <div class="result-details">
+          <div class="result-row">
+            <span>Total duration</span>
+            <strong id="durationResult"></strong>
+          </div>
+
+          <div class="result-row">
+            <span>Tablets per day</span>
+            <strong id="dailyResult"></strong>
+          </div>
+
+          <div class="result-row">
+            <span>Tablets per strip</span>
+            <strong id="stripSizeResult"></strong>
+          </div>
+
+          <div class="result-row">
+            <span>Strips required</span>
+            <strong id="stripsResult"></strong>
+          </div>
+
+          <div class="result-row">
+            <span>Extra tablets after full strips</span>
+            <strong id="extraResult"></strong>
+          </div>
+        </div>
+      </section>
+
+      <p class="error" id="error" role="alert"></p>
+
+      <div class="note">
+        <span class="note-icon" aria-hidden="true">ⓘ</span>
+        <span>
+          Month calculation uses 30 days per month. Strip quantity
+          is rounded up to ensure enough tablets. This calculator
+          is for quantity estimation only. Follow your doctor's
+          prescribed dosage.
+        </span>
+      </div>
     </div>
 
-    <p class="error" id="error" role="alert"></p>
-
-    <p class="note">
-      Month calculation uses 30 days per month.
-      Strip quantity is rounded up to ensure enough tablets.
-      Follow your doctor's prescribed dosage.
-    </p>
-  </div>
+    <footer class="footer">
+      MediCalc · Simple tools for everyday healthcare
+    </footer>
+  </main>
 
   <script>
     const form = document.getElementById("pillForm");
@@ -217,6 +590,7 @@
       const result = document.getElementById("result");
 
       error.textContent = "";
+      error.style.display = "none";
       result.style.display = "none";
 
       const doses = [morning, evening, night];
@@ -226,7 +600,9 @@
         !Number.isInteger(duration) || duration < 1 || duration > 3650 ||
         !Number.isInteger(stripSize) || stripSize < 1 || stripSize > 1000
       ) {
-        error.textContent = "Please enter valid dose, duration, and strip values.";
+        error.textContent =
+          "Please enter valid dose, duration, and strip values.";
+        error.style.display = "block";
         return;
       }
 
